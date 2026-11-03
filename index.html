@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CampusRide – Campus Sustainable Bike &amp; Scooter Share</title>
+  <meta name="description" content="Unlock a shared e-scooter or bike on campus. Check live station availability, battery levels and prices." />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script>
+    // Design tokens exported from Figma variables (collection "Tokens")
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          colors: {
+            primary: { DEFAULT: '#1F6F54', dark: '#14342B', soft: '#DCEBE3' },
+            accent: '#F2A541',
+            canvas: '#F6F3EA',
+            surface: '#FFFFFF',
+            line: '#D9D4C5',
+            ink: '#1E2A26',
+            muted: '#5E6B66',
+            'on-dark': '#F6F3EA',
+            success: '#2E9E6B',
+            warning: '#D9822B'
+          },
+          borderRadius: { sm: '8px', md: '12px', lg: '20px' }
+        }
+      }
+    };
+  </script>
+  <style type="text/tailwindcss">
+    @layer components {
+      .btn-primary {
+        @apply inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-base font-semibold text-on-dark transition-colors
+               hover:bg-primary-dark focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent;
+      }
+      .btn-secondary {
+        @apply inline-flex items-center justify-center gap-2 rounded-md border-2 border-primary px-6 py-3 text-base font-semibold text-primary transition-colors
+               hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent;
+      }
+      .field {
+        @apply w-full rounded-sm border border-line bg-surface px-4 py-3 text-base text-ink placeholder:text-muted transition
+               hover:border-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary;
+      }
+      .nav-link {
+        @apply rounded-sm px-1 py-1 text-base text-ink transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary;
+      }
+      .foot-link {
+        @apply rounded-sm text-sm text-on-dark transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent;
+      }
+    }
+  </style>
+</head>
+<body class="bg-canvas font-sans text-ink antialiased">
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-on-dark">Skip to main content</a>
+
+  <!-- 1. Navigation bar -->
+  <header class="border-b border-line bg-surface">
+    <nav aria-label="Main" class="mx-auto flex max-w-[1440px] items-center justify-between px-5 py-4 md:px-8 lg:px-12">
+      <a href="#top" class="flex items-center gap-2 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+        <img src="assets/logo.svg" width="36" height="36" alt="CampusRide logo: a green circle with a white letter C" />
+        <span class="text-xl font-semibold">CampusRide</span>
+      </a>
+
+      <ul class="hidden items-center gap-8 lg:flex">
+        <li><a class="nav-link" href="#stations">Stations</a></li>
+        <li><a class="nav-link" href="#stations">Pricing</a></li>
+        <li><a class="nav-link" href="#reserve">How it works</a></li>
+        <li><a class="nav-link" href="#reserve">Contact</a></li>
+      </ul>
+
+      <div class="flex items-center gap-3">
+        <a href="#reserve" class="btn-secondary hidden lg:inline-flex">Log in</a>
+        <a href="#reserve" class="btn-primary hidden md:inline-flex">Sign up</a>
+        <button id="menu-button" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="Toggle navigation menu"
+                class="flex flex-col items-center gap-1 rounded-sm border border-line p-3 transition-colors hover:border-primary hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary lg:hidden">
+          <span class="block h-0.5 w-5 bg-ink"></span>
+          <span class="block h-0.5 w-5 bg-ink"></span>
+          <span class="block h-0.5 w-5 bg-ink"></span>
+        </button>
+      </div>
+    </nav>
+    <div id="mobile-menu" class="hidden border-t border-line px-5 py-4 md:px-8 lg:hidden">
+      <ul class="flex flex-col gap-3">
+        <li><a class="nav-link block" href="#stations">Stations</a></li>
+        <li><a class="nav-link block" href="#stations">Pricing</a></li>
+        <li><a class="nav-link block" href="#reserve">How it works</a></li>
+        <li><a class="nav-link block" href="#reserve">Contact</a></li>
+        <li><a class="nav-link block" href="#reserve">Log in</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- 2. Hero section -->
+    <section id="top" aria-labelledby="hero-title" class="px-5 py-12 md:px-8 md:py-16 lg:px-12 lg:py-24">
+      <div class="mx-auto flex max-w-[1344px] flex-col gap-12 lg:flex-row lg:items-center lg:gap-16">
+        <div class="flex min-w-0 flex-1 flex-col items-start gap-6">
+          <p class="rounded-full bg-primary-soft px-3 py-1 text-sm text-primary">Zero-emission campus mobility</p>
+          <h1 id="hero-title" class="text-4xl font-bold leading-[1.1] text-primary-dark md:text-[44px] lg:text-[56px]">Ride green across campus.</h1>
+          <p class="text-lg leading-7 text-muted">Unlock a shared e-scooter or bike in seconds. Check live station availability, battery levels and prices before you walk.</p>
+          <div class="flex w-full flex-col gap-4 sm:w-auto sm:flex-row">
+            <a href="#reserve" class="btn-primary">Unlock a Scooter</a>
+            <a href="#stations" class="btn-secondary">View Campus Stations</a>
+          </div>
+          <dl class="flex flex-wrap gap-x-8 gap-y-4">
+            <div class="flex flex-col-reverse"><dt class="text-sm text-muted">stations</dt><dd class="text-4xl font-bold text-primary">24</dd></div>
+            <div class="flex flex-col-reverse"><dt class="text-sm text-muted">bikes &amp; scooters</dt><dd class="text-4xl font-bold text-primary">300+</dd></div>
+            <div class="flex flex-col-reverse"><dt class="text-sm text-muted">CO₂ per ride</dt><dd class="text-4xl font-bold text-primary">0 g</dd></div>
+          </dl>
+        </div>
+
+        <aside aria-label="Live station status" class="flex min-w-0 flex-1 flex-col gap-4 rounded-lg bg-primary-dark p-8">
+          <p class="flex items-center gap-2 text-sm text-on-dark"><span class="h-2.5 w-2.5 rounded-full bg-accent" aria-hidden="true"></span>Live now</p>
+          <div class="flex flex-col gap-3 rounded-md bg-surface p-6">
+            <h2 class="text-xl font-semibold">Main Library Station</h2>
+            <p class="text-base text-muted">8 scooters and 12 bikes ready · 82% average battery</p>
+            <div role="progressbar" aria-label="Average battery at Main Library Station" aria-valuemin="0" aria-valuemax="100" aria-valuenow="82"
+                 class="h-2.5 w-full overflow-hidden rounded-full bg-primary-soft">
+              <div class="h-full bg-success" style="width:82%"></div>
+            </div>
+            <a href="#reserve" data-station="Main Library" class="btn-primary w-full">Unlock a Scooter</a>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 3. Multi-card feature grid: stations -->
+    <section id="stations" aria-labelledby="stations-title" class="bg-primary-soft px-5 py-12 md:px-8 md:py-16 lg:px-12 lg:py-24">
+      <div class="mx-auto flex max-w-[1344px] flex-col gap-12">
+        <header class="flex flex-col gap-3">
+          <h2 id="stations-title" class="text-[28px] font-bold leading-9 text-primary-dark md:text-[32px] md:leading-10 lg:text-4xl lg:leading-[44px]">Live campus stations</h2>
+          <p class="text-lg leading-7 text-muted">Real-time availability, battery levels and pricing for every pickup point on campus.</p>
+        </header>
+
+        <ul class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <li>
+            <article class="flex h-full flex-col gap-4 rounded-lg border border-line bg-surface p-6">
+              <div class="flex items-center justify-between gap-2"><h3 class="text-xl font-semibold">Main Library</h3><span class="rounded-full bg-primary-soft px-3 py-1 text-sm text-primary">Open</span></div>
+              <p class="text-sm text-muted">Near Gate 2 · 2 min walk</p>
+              <dl class="flex gap-8"><div><dt class="text-sm text-muted">Scooters</dt><dd class="text-4xl font-bold">8</dd></div><div><dt class="text-sm text-muted">Bikes</dt><dd class="text-4xl font-bold">12</dd></div></dl>
+              <div class="flex flex-col gap-2">
+                <p class="flex justify-between text-sm"><span class="text-muted">Avg. battery</span><span class="font-medium">82%</span></p>
+                <div role="progressbar" aria-label="Average battery, Main Library" aria-valuemin="0" aria-valuemax="100" aria-valuenow="82" class="h-2 w-full overflow-hidden rounded-full bg-primary-soft"><div class="h-full bg-success" style="width:82%"></div></div>
+              </div>
+              <p class="mt-auto text-base">From $0.15 / min</p>
+              <a href="#reserve" data-station="Main Library" class="btn-secondary w-full">Reserve a ride<span class="sr-only"> at Main Library</span></a>
+            </article>
+          </li>
+          <li>
+            <article class="flex h-full flex-col gap-4 rounded-lg border border-line bg-surface p-6">
+              <div class="flex items-center justify-between gap-2"><h3 class="text-xl font-semibold">Computer Science Dept.</h3><span class="shrink-0 rounded-full bg-primary-soft px-3 py-1 text-sm text-primary">Open</span></div>
+              <p class="text-sm text-muted">Block B courtyard · 4 min walk</p>
+              <dl class="flex gap-8"><div><dt class="text-sm text-muted">Scooters</dt><dd class="text-4xl font-bold">5</dd></div><div><dt class="text-sm text-muted">Bikes</dt><dd class="text-4xl font-bold">9</dd></div></dl>
+              <div class="flex flex-col gap-2">
+                <p class="flex justify-between text-sm"><span class="text-muted">Avg. battery</span><span class="font-medium">64%</span></p>
+                <div role="progressbar" aria-label="Average battery, Computer Science Dept." aria-valuemin="0" aria-valuemax="100" aria-valuenow="64" class="h-2 w-full overflow-hidden rounded-full bg-primary-soft"><div class="h-full bg-success" style="width:64%"></div></div>
+              </div>
+              <p class="mt-auto text-base">From $0.15 / min</p>
+              <a href="#reserve" data-station="Computer Science Dept." class="btn-secondary w-full">Reserve a ride<span class="sr-only"> at Computer Science Dept.</span></a>
+            </article>
+          </li>
+          <li>
+            <article class="flex h-full flex-col gap-4 rounded-lg border border-line bg-surface p-6">
+              <div class="flex items-center justify-between gap-2"><h3 class="text-xl font-semibold">Student Hostels</h3><span class="shrink-0 rounded-full bg-primary-soft px-3 py-1 text-sm text-primary">Low stock</span></div>
+              <p class="text-sm text-muted">Hostel Road · 6 min walk</p>
+              <dl class="flex gap-8"><div><dt class="text-sm text-muted">Scooters</dt><dd class="text-4xl font-bold">2</dd></div><div><dt class="text-sm text-muted">Bikes</dt><dd class="text-4xl font-bold">4</dd></div></dl>
+              <div class="flex flex-col gap-2">
+                <p class="flex justify-between text-sm"><span class="text-muted">Avg. battery</span><span class="font-medium">38%</span></p>
+                <div role="progressbar" aria-label="Average battery, Student Hostels" aria-valuemin="0" aria-valuemax="100" aria-valuenow="38" class="h-2 w-full overflow-hidden rounded-full bg-primary-soft"><div class="h-full bg-warning" style="width:38%"></div></div>
+              </div>
+              <p class="mt-auto text-base">From $0.12 / min</p>
+              <a href="#reserve" data-station="Student Hostels" class="btn-secondary w-full">Reserve a ride<span class="sr-only"> at Student Hostels</span></a>
+            </article>
+          </li>
+          <li>
+            <article class="flex h-full flex-col gap-4 rounded-lg border border-line bg-surface p-6">
+              <div class="flex items-center justify-between gap-2"><h3 class="text-xl font-semibold">Sports Complex</h3><span class="shrink-0 rounded-full bg-primary-soft px-3 py-1 text-sm text-primary">Open</span></div>
+              <p class="text-sm text-muted">Beside the cricket ground</p>
+              <dl class="flex gap-8"><div><dt class="text-sm text-muted">Scooters</dt><dd class="text-4xl font-bold">11</dd></div><div><dt class="text-sm text-muted">Bikes</dt><dd class="text-4xl font-bold">6</dd></div></dl>
+              <div class="flex flex-col gap-2">
+                <p class="flex justify-between text-sm"><span class="text-muted">Avg. battery</span><span class="font-medium">95%</span></p>
+                <div role="progressbar" aria-label="Average battery, Sports Complex" aria-valuemin="0" aria-valuemax="100" aria-valuenow="95" class="h-2 w-full overflow-hidden rounded-full bg-primary-soft"><div class="h-full bg-success" style="width:95%"></div></div>
+              </div>
+              <p class="mt-auto text-base">From $0.15 / min</p>
+              <a href="#reserve" data-station="Sports Complex" class="btn-secondary w-full">Reserve a ride<span class="sr-only"> at Sports Complex</span></a>
+            </article>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 4a. Contact & reservation form -->
+    <section id="reserve" aria-labelledby="reserve-title" class="px-5 py-12 md:px-8 md:py-16 lg:px-12 lg:py-24">
+      <div class="mx-auto flex max-w-[1344px] flex-col gap-12 lg:flex-row lg:gap-16">
+        <div class="flex min-w-0 flex-1 flex-col gap-4">
+          <h2 id="reserve-title" class="text-[28px] font-bold leading-9 text-primary-dark md:text-[32px] md:leading-10 lg:text-4xl lg:leading-[44px]">Reserve a ride or send feedback</h2>
+          <p class="text-lg leading-7 text-muted">Book a scooter at your nearest station or tell us how we can improve. We reply within one working day.</p>
+          <p class="text-base"><a class="rounded-sm underline decoration-primary underline-offset-4 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" href="mailto:support@campusride.pk">support@campusride.pk</a> · Mon–Sat, 8am–8pm</p>
+        </div>
+
+        <form id="reserve-form" aria-label="Reservation and feedback form" class="flex min-w-0 flex-1 flex-col gap-5 rounded-lg border border-line bg-surface p-6 md:p-8">
+          <div class="flex flex-col gap-2">
+            <label for="name" class="text-sm font-medium">Full name</label>
+            <input id="name" name="name" type="text" autocomplete="name" required placeholder="Ayesha Khan" class="field" />
+          </div>
+          <div class="flex flex-col gap-2">
+            <label for="email" class="text-sm font-medium">University email</label>
+            <input id="email" name="email" type="email" autocomplete="email" required placeholder="name@pucit.edu.pk" class="field" />
+          </div>
+          <div class="flex flex-col gap-2">
+            <label for="station" class="text-sm font-medium">Pickup station</label>
+            <select id="station" name="station" required class="field">
+              <option>Main Library</option>
+              <option>Computer Science Dept.</option>
+              <option>Student Hostels</option>
+              <option>Sports Complex</option>
+            </select>
+          </div>
+          <div class="flex flex-col gap-2">
+            <label for="message" class="text-sm font-medium">Message or feedback</label>
+            <textarea id="message" name="message" rows="4" placeholder="Tell us what you need…" class="field resize-y"></textarea>
+          </div>
+          <button type="submit" class="btn-primary w-full">Reserve a ride</button>
+          <p id="form-status" role="status" aria-live="polite" class="hidden rounded-sm bg-primary-soft p-3 text-sm text-primary-dark"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- 4b. Footer -->
+  <footer class="bg-primary-dark px-5 py-16 text-on-dark md:px-8 lg:px-12">
+    <div class="mx-auto flex max-w-[1344px] flex-col gap-8">
+      <div class="flex flex-col gap-12 md:flex-row">
+        <div class="flex min-w-0 flex-1 flex-col gap-3">
+          <p class="text-xl font-semibold">CampusRide</p>
+          <p class="text-sm">Shared e-scooters and bikes for a cleaner, quieter campus.</p>
+        </div>
+        <nav aria-label="Explore" class="flex flex-col gap-3">
+          <p class="text-sm font-medium text-accent">Explore</p>
+          <a class="foot-link" href="#stations">Stations</a>
+          <a class="foot-link" href="#stations">Pricing</a>
+          <a class="foot-link" href="#reserve">How it works</a>
+        </nav>
+        <nav aria-label="Support" class="flex flex-col gap-3">
+          <p class="text-sm font-medium text-accent">Support</p>
+          <a class="foot-link" href="#reserve">Contact</a>
+          <a class="foot-link" href="#reserve">FAQ</a>
+          <a class="foot-link" href="#reserve">Safety guide</a>
+        </nav>
+      </div>
+      <hr class="border-on-dark/25" />
+      <p class="text-sm">© <span id="year">2026</span> CampusRide · HCI Lab 07, PUCIT</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
